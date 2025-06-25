@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Resultados PECL2</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #aaa; padding: 0.5em; text-align: center; }
+    th { background-color: #f0f0f0; }
+  </style>
+</head>
+<body>
+  <h1>Tabla de resultados PECL2</h1>
+  <table id="resultados">
+    <tr>
+      <th>Archivo</th>
+      <th>Usuario</th>
+      <th>Fecha</th>
+      <th>Colores</th>
+    </tr>
+  </table>
+
+  <script>
+    fetch("https://<NOMBRE-DE-TU-FUNCTION-APP>.azurewebsites.net/api/listar")
+      .then(response => response.json())
+      .then(data => {
+        const tabla = document.getElementById("resultados");
+        data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        data.forEach(row => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${row.filename}</td>
+            <td>${row.username}</td>
+            <td>${new Date(row.date).toLocaleString()}</td>
+            <td>${Object.entries(row.colors).map(([k, v]) => `${k}: ${v}`).join(', ')}</td>
+          `;
+          tabla.appendChild(tr);
+        });
+      })
+      .catch(error => {
+        console.error("Error al cargar los datos:", error);
+        const tabla = document.getElementById("resultados");
+        tabla.insertAdjacentHTML("beforeend", "<tr><td colspan='4'>Error cargando datos</td></tr>");
+      });
+  </script>
+</body>
+</html>
